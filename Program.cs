@@ -116,7 +116,7 @@ namespace TC_Parkering_Program
                     }
 
 
-                //Eric
+                //Erics
                 }
 
                 return "Det finns inga lediga parkeringsplatser.";
