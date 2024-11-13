@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TC_Parkering_Program
 {
@@ -6,7 +7,6 @@ namespace TC_Parkering_Program
     {
         static void Main(string[] args)
         {
-
             string användarval;
             Console.WriteLine("Välj din roll");
             Console.WriteLine("1: Kund");
@@ -35,7 +35,10 @@ namespace TC_Parkering_Program
 
         static void KundUI()
         {
-            Console.WriteLine("Välkommen kund!");
+            Console.WriteLine("Välkommen !");
+            Console.WriteLine("Skriv in ditt registreringsnummer:");
+            string regnummer = Console.ReadLine();
+
             Console.WriteLine("Välj fordonstyp:");
             Console.WriteLine("1: Bil");
             Console.WriteLine("2: Buss (Tar två platser)");
@@ -50,10 +53,6 @@ namespace TC_Parkering_Program
                 _ => "bil" // Om användaren inte väljer ett giltigt alternativ
             };
 
-            // Automatgenerera registreringsnummer
-            parkeringsplats parkering = new parkeringsplats();
-            string regnummer = parkering.Reggnummer();
-
             // Ange parkeringstid
             Console.WriteLine("Ange hur länge du vill parkera (i sekunder):");
             int parkeringstid;
@@ -63,13 +62,13 @@ namespace TC_Parkering_Program
             }
 
             // Parkera fordonet
+            parkeringsplats parkering = new parkeringsplats();
             DateTime startTid = DateTime.Now;
             string parkeringPlats = parkering.ParkeraBil(fordonstyp, regnummer, startTid, parkeringstid);
 
             Console.WriteLine($"Fordonet med registreringsnummer {regnummer} har parkerat på: {parkeringPlats}");
 
-            // Visa alla parkerade fordon
-            parkering.SkrivUtParkeradeFordonsLista();
+            
 
             // Checka ut eller fortsätt
             Console.WriteLine("\nVill du checka ut?");
@@ -115,122 +114,128 @@ namespace TC_Parkering_Program
 
         private Random random = new Random();
 
-        // Automatgenerera registreringsnummer
-        public string Reggnummer()
+        // Slumpa ledig plats
+        private int HittaLedigPlats(int platserBehovda, bool delaPlats = false)
         {
-            const string bokstäver = "ABCDEFGHIJKLMNOPQRSTUVWHYZ";
-            const string siffror = "0123456789";
+            List<int> ledigaPlatser = new List<int>();
 
-            char[] reg = new char[6];
-            for (int i = 0; i < 3; i++)
+            if (platserBehovda == 1 && delaPlats) // För motorcykel
             {
-                reg[i] = bokstäver[random.Next(bokstäver.Length)];
+                for (int i = 0; i < fordon.Length; i++)
+                {
+                    if (fordon[i] == null || fordon[i].StartsWith("MC"))
+                    {
+                        ledigaPlatser.Add(i);
+                    }
+                }
+            }
+            else if (platserBehovda == 1) // För bil
+            {
+                for (int i = 0; i < fordon.Length; i++)
+                {
+                    if (fordon[i] == null)
+                    {
+                        ledigaPlatser.Add(i);
+                    }
+                }
+            }
+            else if (platserBehovda == 2) // För buss
+            {
+                for (int i = 0; i < fordon.Length - 1; i++)
+                {
+                    if (fordon[i] == null && fordon[i + 1] == null)
+                    {
+                        ledigaPlatser.Add(i);
+                    }
+                }
             }
 
-            for (int i = 3; i < 6; i++)
+            if (ledigaPlatser.Count > 0)
             {
-                reg[i] = siffror[random.Next(siffror.Length)];
+                // Slumpa en av de lediga platserna
+                return ledigaPlatser[random.Next(ledigaPlatser.Count)];
             }
 
-            return new string(reg);
+            return -1; // Ingen ledig plats hittades
         }
 
         // Parkera fordonet
         public string ParkeraBil(string fordonstyp, string regnummer, DateTime startTid, int parkeringstid)
         {
+            int ledigPlats;
+
             if (fordonstyp == "bil")
             {
-                for (int i = 0; i < fordon.Length; i++)
+                ledigPlats = HittaLedigPlats(1); // En plats behövs
+                if (ledigPlats != -1)
                 {
-                    if (fordon[i] == null)  // Ledig plats
-                    {
-                        fordon[i] = regnummer;
-                        this.parkeringstid[i] = startTid;
-                        this.fordonstid[i] = parkeringstid;
-                        this.fordonstyp[i] = fordonstyp;
-                        this.fordonRegNr[i] = regnummer;
-                        return $"Plats {i + 1}";
-                    }
+                    fordon[ledigPlats] = regnummer;
+                    this.parkeringstid[ledigPlats] = startTid;
+                    this.fordonstid[ledigPlats] = parkeringstid;
+                    this.fordonstyp[ledigPlats] = fordonstyp;
+                    this.fordonRegNr[ledigPlats] = regnummer;
+                    return $"Plats {ledigPlats + 1}";
                 }
             }
             else if (fordonstyp == "buss")
             {
-                // Buss kräver 2 intilliggande platser
-                for (int i = 0; i < fordon.Length - 1; i++)
+                ledigPlats = HittaLedigPlats(2); // Två intilliggande platser behövs
+                if (ledigPlats != -1)
                 {
-                    if (fordon[i] == null && fordon[i + 1] == null)  // Två intilliggande lediga platser
-                    {
-                        fordon[i] = regnummer;
-                        fordon[i + 1] = regnummer;
-                        this.parkeringstid[i] = startTid;
-                        this.parkeringstid[i + 1] = startTid;
-                        this.fordonstid[i] = parkeringstid;
-                        this.fordonstid[i + 1] = parkeringstid;
-                        this.fordonstyp[i] = "buss";
-                        this.fordonstyp[i + 1] = "buss";
-                        this.fordonRegNr[i] = regnummer;
-                        this.fordonRegNr[i + 1] = regnummer;
-                        return $"Plats {i + 1}-{i + 2}";
-                    }
+                    fordon[ledigPlats] = regnummer;
+                    fordon[ledigPlats + 1] = regnummer;
+                    this.parkeringstid[ledigPlats] = startTid;
+                    this.parkeringstid[ledigPlats + 1] = startTid;
+                    this.fordonstid[ledigPlats] = parkeringstid;
+                    this.fordonstid[ledigPlats + 1] = parkeringstid;
+                    this.fordonstyp[ledigPlats] = fordonstyp;
+                    this.fordonstyp[ledigPlats + 1] = fordonstyp;
+                    this.fordonRegNr[ledigPlats] = regnummer;
+                    this.fordonRegNr[ledigPlats + 1] = regnummer;
+                    return $"Plats {ledigPlats + 1}-{ledigPlats + 2}";
                 }
             }
             else if (fordonstyp == "motorcykel")
             {
-                // Motorcykel kan dela plats
-                for (int i = 0; i < fordon.Length; i++)
+                ledigPlats = HittaLedigPlats(1, true); // En plats, tillåter delning
+                if (ledigPlats != -1)
                 {
-                    if (fordon[i] == null || fordon[i].StartsWith("MC"))  // Ledig eller delad MC-plats
+                    if (fordon[ledigPlats] == null)
                     {
-                        if (fordon[i] == null)
-                        {
-                            fordon[i] = "MC-" + regnummer;
-                            this.parkeringstid[i] = startTid;
-                            this.fordonstid[i] = parkeringstid;
-                            this.fordonstyp[i] = fordonstyp;
-                            this.fordonRegNr[i] = regnummer;
-                        }
-                        else if (fordon[i].StartsWith("MC") && !fordon[i].Contains("+"))
-                        {
-                            fordon[i] += "+" + regnummer;  // Lägg till ytterligare MC på samma plats
-                        }
-                        return $"Plats {i + 1}";
+                        fordon[ledigPlats] = "MC-" + regnummer;
+                        this.parkeringstid[ledigPlats] = startTid;
+                        this.fordonstid[ledigPlats] = parkeringstid;
+                        this.fordonstyp[ledigPlats] = fordonstyp;
+                        this.fordonRegNr[ledigPlats] = regnummer;
                     }
+                    else if (fordon[ledigPlats].StartsWith("MC") && !fordon[ledigPlats].Contains("+"))
+                    {
+                        fordon[ledigPlats] += "+" + regnummer; // Lägg till ytterligare MC på samma plats
+                    }
+                    return $"Plats {ledigPlats + 1}";
                 }
             }
 
             return "Inga lediga parkeringsplatser för fordonstypen.";
         }
 
-        // Skriv ut alla parkerade fordon
-        public void SkrivUtParkeradeFordonsLista()
-        {
-            Console.WriteLine("\nAlla parkerade fordon:");
-            for (int i = 0; i < fordon.Length; i++)
-            {
-                if (fordon[i] != null)
-                {
-                    string status = (fordonstid[i] > 0) ? $"{fordonstid[i]} sek kvar" : "Tiden ute";
-                    Console.WriteLine($"Plats {i + 1}: {fordonstyp[i]} {fordonRegNr[i]} Tiden: {status}");
-                }
-            }
-        }
+        
 
-        // Checka ut ett fordon
+        // Checka ut fordonet
         public void CheckaUtBil(string regnummer)
         {
             for (int i = 0; i < fordon.Length; i++)
             {
-                if (fordonRegNr[i] == regnummer)
+                if (fordon[i] != null && fordon[i].Contains(regnummer))
                 {
-                    // Rensa platsen och tid
                     fordon[i] = null;
-                    parkeringstid[i] = DateTime.MinValue;
                     fordonstid[i] = 0;
+                    parkeringstid[i] = DateTime.MinValue;
                     fordonstyp[i] = null;
                     fordonRegNr[i] = null;
-                    break;
                 }
             }
         }
     }
 }
+
