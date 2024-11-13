@@ -32,6 +32,7 @@ namespace TC_Parkering_Program
                     break;
             }
             // mesgun....
+            //Testar ..
             static void Kund()
             {
                 Console.WriteLine("Välkommen kund, vänligen parkera på en ledig plats.");
