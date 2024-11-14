@@ -194,8 +194,14 @@ namespace TC_Parkering_Program
         {
             public string size { get; set; }
 
-                return "Det finns inga lediga parkeringsplatser.";
-            }
+        }
+        public class bus : vehicle
+        {
+            public int seats { get; set; }
+        }
+        public class motorcycle : vehicle
+        {
+            public int size { get; set; }
         }
     }
 }
