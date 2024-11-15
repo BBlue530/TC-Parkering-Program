@@ -33,41 +33,44 @@ namespace TC_Parkering_Program
                     Console.WriteLine("Ogiltigt val.");
                     break;
             }
-            // mesgun....
-            //Testar ..
-            static void Kund()
+            await Parkering.VäntaTillsParkeringTom();
+            Console.WriteLine("Alla parkeringsplatser är nu tomma. Programmet avslutas.");
+
+            // linus
+            //Tes
+            static void Kund(parkeringsplats Parkering)
             {
                 Console.WriteLine("Välkommen kund, vänligen parkera på en ledig plats.");
                 string bilnummer = string.Empty;
 
-            while (string.IsNullOrWhiteSpace(bilnummer))
-            {
-                bilnummer = Console.ReadLine();
+                while (string.IsNullOrWhiteSpace(bilnummer))
+                {
+                    bilnummer = Console.ReadLine();
+                }
+
+                string parkering = Parkering.ParkeraBil(bilnummer);
+                Console.WriteLine($"Din bil ({bilnummer}) har parkerat på plats {parkering}.");
+
+                for (int i = 0; i < 4; i++)
+                {
+                    Parkering.ParkeraBil();
+                }
             }
 
-            string parkering = Parkering.ParkeraBil(bilnummer);
-            Console.WriteLine($"Din bil ({bilnummer}) har parkerat på plats {parkering}.");
-
-            for (int i = 0; i < 4; i++)
+            static void Vakt(parkeringsplats Parkering)
             {
-                Parkering.ParkeraBil();
+                Console.WriteLine("Vakt");
+                for (int i = 0; i < 10; i++)
+                {
+                    Parkering.ParkeraBil();
+                }
+            }
+
+            static void Ägare()
+            {
+                Console.WriteLine("Ägare");
             }
         }
-
-        static void Vakt(parkeringsplats Parkering)
-        {
-            Console.WriteLine("Vakt");
-            for (int i = 0; i < 10; i++)
-            {
-                Parkering.ParkeraBil();
-            }
-        }
-
-        static void Ägare()
-        {
-            Console.WriteLine("Ägare");
-        }
-
         public class parkeringsplats
         {
             private string[] fordon = new string[10];
@@ -179,12 +182,12 @@ namespace TC_Parkering_Program
                 }
             }
         }
-
+    
         public class vehicle
         {
             public string Name { get; set; } = "John";
             public int numberOfWheels { get; set; }
-            
+
 
         }
         public class car : vehicle
@@ -200,5 +203,7 @@ namespace TC_Parkering_Program
         {
             public int size { get; set; }
         }
+      
     }
+      
 }
