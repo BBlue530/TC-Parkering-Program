@@ -79,8 +79,6 @@ namespace TC_Parkering_Program
             private string[] fordon = new string[10];
             private int[] tider = new int[10];
             private List<string> utgångnaBilar = new List<string>();  // För att spara vilka bilar som har gått ut i en list
-            private List<string> Kvitton = new List<string>();//lagra kvitto
-            private double totalVinst = 0; //vinsten för dagen
             private Random random = new Random();
             private object låsObjekt = new object();
             private int aktivaBilar = 0;
@@ -188,26 +186,7 @@ namespace TC_Parkering_Program
             }           
         }
     
-        public class vehicle
-        {
-            public string Name { get; set; } = "John";
-            public int numberOfWheels { get; set; }
-
-
-        }
-        public class car : vehicle
-        {
-            public string size { get; set; }
-
-        }
-        public class bus : vehicle
-        {
-            public int seats { get; set; }
-        }
-        public class motorcycle : vehicle
-        {
-            public int size { get; set; }
-        }
+       
       
     }
       
