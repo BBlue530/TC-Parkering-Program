@@ -70,6 +70,7 @@ namespace TC_Parkering_Program
             static void Ägare(parkeringsplats Parkering)
             {
                 Console.WriteLine("\nVälkommen, ägare");
+                Parkering.Kvitto();
 
                 
             }
@@ -158,6 +159,7 @@ namespace TC_Parkering_Program
                 }
             }
 
+
             private void UppdateraDisplay()
             {
                 lock (låsObjekt)
@@ -183,8 +185,45 @@ namespace TC_Parkering_Program
                         Console.WriteLine($"Bil: {bil}");
                     }
                 }
-            }           
+            }
+            public void Kvitto()
+            {
+                lock (låsObjekt)
+                {
+                    Console.WriteLine("\nDagens Kvitto");
+
+                    double totalVinst = 0;
+                    List<string> dagensKvitto = new List<string>();
+                    for (int i = 0; i < fordon.Length; i++)
+                    {
+                        if (fordon[i] != null)
+                        {
+                            double parkeringstid = tider[i]; //använder tiden från array
+                            double kostnad = parkeringstid * 1.5; //pris per sekund
+
+                            string kvitto = $"$\"Registreringsnummer: {fordon[i]}| Tid parkerad: {parkeringstid:F0} sekunder | kostnad: {kostnad:F2} SEK ";
+                            dagensKvitto.Add( kvitto );
+
+                            totalVinst += kostnad;
+                        }
+                    }
+                    // Skriv ut alla kvitton
+                    if(dagensKvitto.Count > 0)
+                    {
+                        foreach(var kvitto in dagensKvitto)
+                        {
+                            Console.WriteLine(kvitto);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Inga bilar parkerade idag.");
+                    }
+                    Console.WriteLine($"\nDagens totala vinst: {totalVinst:F2}");
+                }
+            }
         }
+        
     
        
       
