@@ -51,6 +51,7 @@ namespace TC_Parkering_Program
             string parkering = Parkering.ParkeraBil(bilnummer);
             Console.WriteLine($"Din bil ({bilnummer}) har parkerat på plats {parkering}.");
 
+            // Här kan du testa genom att parkera flera bilar om du vill
             for (int i = 0; i < 4; i++)
             {
                 Parkering.ParkeraBil();
@@ -75,10 +76,12 @@ namespace TC_Parkering_Program
         {
             private string[] fordon = new string[10];
             private int[] tider = new int[10];
-            private List<string> utgångnaBilar = new List<string>();  // För att spara vilka bilar som har gått ut i en list
+            private List<string> utgångnaBilar = new List<string>();
             private Random random = new Random();
             private object låsObjekt = new object();
             private int aktivaBilar = 0;
+            private decimal dagsinkomst = 0m; // För att hålla reda på dagsinkomsten
+            private const decimal böter = 500m; // Bötesbelopp
 
             public string ParkeraBil(string bilnummer = null)
             {
@@ -144,6 +147,9 @@ namespace TC_Parkering_Program
                     fordon[plats] = null;
                     tider[plats] = 0;
                     Interlocked.Decrement(ref aktivaBilar);
+
+                    // Lägg till böter när tiden har gått ut
+                    dagsinkomst += böter;
                 }
             }
 
@@ -179,29 +185,11 @@ namespace TC_Parkering_Program
                     {
                         Console.WriteLine($"Bil: {bil}");
                     }
+
+                    // Visa dagens inkomster
+                    Console.WriteLine($"\nDagens intäkter: {dagsinkomst} SEK");
                 }
             }
-        }
-
-        public class vehicle
-        {
-            public string Name { get; set; } = "John";
-            public int numberOfWheels { get; set; }
-            
-
-        }
-        public class car : vehicle
-        {
-            public string size { get; set; }
-
-        }
-        public class bus : vehicle
-        {
-            public int seats { get; set; }
-        }
-        public class motorcycle : vehicle
-        {
-            public int size { get; set; }
         }
     }
 }
