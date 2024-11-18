@@ -8,32 +8,33 @@ namespace TC_Parkering_Program
     internal class Program
     {
         static async Task Main(string[] args)
-        {
-            string användarval;
-            Console.WriteLine("Välj din roll");
-            Console.WriteLine("1: Kund");
-            Console.WriteLine("2: Parkeringsvakt");
-            Console.WriteLine("3: Ägare");
-            användarval = Console.ReadLine();
+        {          
+                    
+                string användarval;
+                Console.WriteLine("Välj din roll");
+                Console.WriteLine("1: Kund");
+                Console.WriteLine("2: Parkeringsvakt");
+                Console.WriteLine("3: Ägare");
+                användarval = Console.ReadLine();
 
-            parkeringsplats Parkering = new parkeringsplats();
+                parkeringsplats Parkering = new parkeringsplats();
 
-            switch (användarval)
-            {
-                case "1":
-                    Kund(Parkering);
-                    break;
-                case "2":
-                    Vakt(Parkering);
-                    break;
-                case "3":
-                    Ägare();
-                    break;
-                default:
-                    Console.WriteLine("Ogiltigt val.");
-                    break;
-            }
-            await Parkering.VäntaTillsParkeringTom();
+                switch (användarval)
+                {
+                    case "1":
+                        Kund(Parkering);
+                        break;
+                    case "2":
+                        Vakt(Parkering);
+                        break;
+                    case "3":
+                        Ägare(Parkering);
+                        break;
+                    default:
+                        Console.WriteLine("Ogiltigt val.");
+                        break;
+                }
+                await Parkering.VäntaTillsParkeringTom();            
             Console.WriteLine("Alla parkeringsplatser är nu tomma. Programmet avslutas.");
 
             // linus
@@ -66,9 +67,11 @@ namespace TC_Parkering_Program
                 }
             }
 
-            static void Ägare()
+            static void Ägare(parkeringsplats Parkering)
             {
-                Console.WriteLine("Ägare");
+                Console.WriteLine("\nVälkommen, ägare");
+
+                
             }
         }
         public class parkeringsplats
@@ -76,6 +79,8 @@ namespace TC_Parkering_Program
             private string[] fordon = new string[10];
             private int[] tider = new int[10];
             private List<string> utgångnaBilar = new List<string>();  // För att spara vilka bilar som har gått ut i en list
+            private List<string> Kvitton = new List<string>();//lagra kvitto
+            private double totalVinst = 0; //vinsten för dagen
             private Random random = new Random();
             private object låsObjekt = new object();
             private int aktivaBilar = 0;
@@ -139,14 +144,14 @@ namespace TC_Parkering_Program
             private void BilGåttUt(int plats)
             {
                 lock (låsObjekt)
-                {
+                {                   
                     utgångnaBilar.Add(fordon[plats]);
                     fordon[plats] = null;
                     tider[plats] = 0;
                     Interlocked.Decrement(ref aktivaBilar);
                 }
             }
-
+           
             public async Task VäntaTillsParkeringTom()
             {
                 while (aktivaBilar > 0)
@@ -180,7 +185,7 @@ namespace TC_Parkering_Program
                         Console.WriteLine($"Bil: {bil}");
                     }
                 }
-            }
+            }           
         }
     
         public class vehicle
