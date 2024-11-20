@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +37,26 @@ namespace TC_Parkering_Program
 
             await Parkering.VäntaTillsParkeringTom();
             Console.WriteLine("Alla parkeringsplatser är nu tomma.");
+
+            Console.WindowHeight = 45;
+            Console.WindowWidth = 120;
+
+            int[] mapSize = { 25, 100 };
+
+            
+
+            Console.WriteLine("Parkeringsplatsen:");
+
+            while(programIsrunning)
+            {
+                Console.WriteLine(mapSize);
+
+            }
+
+            
+
         }
+        public static bool programIsrunning = true;
 
         static void KundUI(parkeringsplats Parkering)
         {
