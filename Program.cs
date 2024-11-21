@@ -131,7 +131,6 @@ namespace TC_Parkering_Program
 
             Console.WriteLine("Alla platser är nu fyllda");
         }
-
         public class parkeringsplats
         {
             private string[] fordon = new string[10];
@@ -145,6 +144,20 @@ namespace TC_Parkering_Program
             private decimal dagsinkomst = 0m;
             private const decimal böter = 500m;
 
+            public bool FinnsLedigPlats()
+            {
+                lock (låsObjekt)
+                {
+                    for (int i = 0; i < fordon.Length; i++)
+                    {
+                        if (fordon[i] == null)
+                        {
+                            return true; 
+                        }
+                    }
+                }
+                return false; 
+            }
 
             public string ParkeraBil(string regnummer, string färg, string typ, int tid)
             {
